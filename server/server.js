@@ -37,9 +37,42 @@ app.post('/api/users/register', (req, res) => {
     res.json({
       success: false,
       err
-    })
+    });
+  });
+});
+
+app.post('/api/users/login', (req, res) => {
+  const { password, email } = req.body;
+
+  User.findOne({'email': email}).then(user => {
+    if(!user){
+      return res.json({
+        loginSuccess: false,
+        message: 'Auth failed, Email not found'
+      });
+    }
+    
+    user.comparePassword(password, (err, isMatch) => {
+      if(!isMatch){
+        return res.json({
+          loginSuccess: false,
+          message: 'Wrong password'
+        });
+      }
+
+      user.generateToken((err, user) => {
+        if(err){
+          return res.status(400).send(err);
+        }
+        res.cookie('w_auth', user.token).status(200).json({
+          loginSuccess: true
+        });
+      });
+
+    });
+    
   })
-})
+});
 
 
 app.listen(port, () => {
