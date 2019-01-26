@@ -26,7 +26,19 @@ app.get("/", (req,res) => {
 //======================
 
 app.post('/api/users/register', (req, res) => {
-  res.status(200).send("You hit the end point")
+  new User(req.body).save()
+  .then(user => {
+    res.status(200).json({
+      success: true,
+      userdata: user
+    });
+  })
+  .catch(err => {
+    res.json({
+      success: false,
+      err
+    })
+  })
 })
 
 
