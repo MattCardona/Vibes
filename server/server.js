@@ -9,6 +9,7 @@ mongoose.Promise = global.Promise;
 mongoose.connect(process.env.MONGO_DB, {useNewUrlParser: true});
 const { User } = require('./models/user');
 
+const { auth } = require('./middleware/auth');
 
 const port = process.env.PORT || 3000;
 
@@ -25,12 +26,26 @@ app.get("/", (req,res) => {
 // User routes
 //======================
 
+app.get('/api/users/auth', auth, (req, res) => {
+  const { email, name, lastname, role, cart, history } = req.user;
+  res.status(200).json({
+    isAdmin: role === 0 ? false : true,
+    isAuth: true,
+    email,
+    name,
+    lastname,
+    role,
+    cart,
+    history
+  });
+});
+
+
 app.post('/api/users/register', (req, res) => {
   new User(req.body).save()
   .then(user => {
     res.status(200).json({
-      success: true,
-      userdata: user
+      success: true
     });
   })
   .catch(err => {
