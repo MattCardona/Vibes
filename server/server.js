@@ -89,6 +89,21 @@ app.post('/api/users/login', (req, res) => {
   })
 });
 
+app.get('/api/user/logout', auth, (req, res) => {
+  const { id } = req.user;
+  User.findOneAndUpdate({_id: id},{token: ''})
+  .then(doc => {
+    return res.status(200).json({
+      success: true
+    });
+  })
+  .catch(err => {
+    return res.json({
+      success: false,
+      err
+    });
+  });
+});
 
 app.listen(port, () => {
   console.log(`The Vibes server is running on port ${port}`);
