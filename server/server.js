@@ -43,7 +43,15 @@ app.post('/api/product/brand', auth, admin, (req, res) => {
   });
 });
 
-
+app.get('/api/product/brands', (req, res) => {
+  Brand.find({})
+  .then(brands => {
+    res.status(200).send(brands);
+  })
+  .catch(err => {
+    return res.status(400).send(err);
+  });
+});
 
 //======================
 //     User routes
