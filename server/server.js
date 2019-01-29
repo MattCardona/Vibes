@@ -9,7 +9,7 @@ mongoose.Promise = global.Promise;
 mongoose.connect(process.env.MONGO_DB, {useNewUrlParser: true});
 const { User } = require('./models/user');
 const { Brand } = require('./models/brand'); 
-const { Woodd } = require('./models/wood'); 
+const { Wood } = require('./models/wood'); 
 
 const { auth } = require('./middleware/auth');
 const { admin } = require('./middleware/admin');
@@ -44,7 +44,15 @@ app.post('/api/product/wood', auth, admin, (req, res) => {
   });
 });
 
-
+app.get('/api/product/woods', auth, admin, (req, res) => {
+  Wood.find({})
+  .then(woods => {
+    res.status(200).send(woods);
+  })
+  .catch(err => {
+    return res.status(400).send(err);
+  });
+});
 
 //======================
 //     Brand routes
