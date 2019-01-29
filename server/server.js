@@ -8,8 +8,10 @@ const cookieParser = require('cookie-parser');
 mongoose.Promise = global.Promise;
 mongoose.connect(process.env.MONGO_DB, {useNewUrlParser: true});
 const { User } = require('./models/user');
+const { Brand } = require('./models/brand'); 
 
 const { auth } = require('./middleware/auth');
+const { admin } = require('./middleware/admin');
 
 const port = process.env.PORT || 3000;
 
@@ -21,9 +23,30 @@ app.get("/", (req,res) => {
   res.send("This is the home route");
 })
 
+//======================
+//     Brand routes
+//======================
+
+app.post('/api/product/brand', auth, admin, (req, res) => {
+  new Brand(req.body).save()
+  .then(doc => {
+    res.status(200).json({
+      success: true,
+      brand: doc
+    });
+  })
+  .catch(err => {
+    return res.json({
+      success: false,
+      err
+    });
+  });
+});
+
+
 
 //======================
-// User routes
+//     User routes
 //======================
 
 app.get('/api/users/auth', auth, (req, res) => {
