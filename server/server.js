@@ -9,6 +9,7 @@ mongoose.Promise = global.Promise;
 mongoose.connect(process.env.MONGO_DB, {useNewUrlParser: true});
 const { User } = require('./models/user');
 const { Brand } = require('./models/brand'); 
+const { Woodd } = require('./models/wood'); 
 
 const { auth } = require('./middleware/auth');
 const { admin } = require('./middleware/admin');
@@ -22,6 +23,28 @@ app.use(cookieParser());
 app.get("/", (req,res) => {
   res.send("This is the home route");
 })
+
+//======================
+//     Types of Woods routes
+//======================
+
+app.post('/api/product/wood', auth, admin, (req, res) => {
+  new Wood(req.body).save()
+  .then(doc => {
+    res.status(200).json({
+      success: true,
+      wood: doc
+    });
+  })
+  .catch(err => {
+    return res.json({
+      success: false,
+      err
+    });
+  });
+});
+
+
 
 //======================
 //     Brand routes
