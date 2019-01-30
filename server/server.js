@@ -10,6 +10,7 @@ mongoose.connect(process.env.MONGO_DB, {useNewUrlParser: true});
 const { User } = require('./models/user');
 const { Brand } = require('./models/brand'); 
 const { Wood } = require('./models/wood'); 
+const { Guitar } = require('./models/guitars'); 
 
 const { auth } = require('./middleware/auth');
 const { admin } = require('./middleware/admin');
@@ -23,6 +24,25 @@ app.use(cookieParser());
 app.get("/", (req,res) => {
   res.send("This is the home route");
 })
+//======================
+//     Guitar routes
+//======================
+app.post('/api/product/article', auth, admin, (req, res) => {
+  new Guitar(req.body).save()
+  .then(doc => {
+    res.status(200).json({
+      success: true,
+      article: doc
+    });
+  })
+  .catch(err => {
+    return res.json({
+      success: false,
+      err
+    });
+  });
+});
+
 
 //======================
 //     Types of Woods routes
