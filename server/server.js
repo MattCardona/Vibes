@@ -24,6 +24,31 @@ app.use(cookieParser());
 app.get("/", (req,res) => {
   res.send("This is the home route");
 })
+// sort by arrival
+// "/articles?sortBy=createdAt&order=desc&limit=4"
+
+// sort by sold
+// "/articles?sortBy=sold&order=desc&limit=4"
+app.get('/api/product/articles', (req, res) => {
+  let order = req.query.order ? req.query.order : 'asc';
+  let sortBy = req.query.sortBy ? req.query.sortBy : '_id';
+  let limit = req.query.limit ? parseInt(req.query.limit) : 50;
+
+  Guitar.find()
+  .populate('brand')
+  .populate('wood')
+  .sort([[sortBy, order]])
+  .limit(limit)
+  .exec()
+  .then(guitars => {
+    return res.status(200).send(guitars);
+  })
+  .catch(err => {
+    return res.status(400).send(err);
+  })
+});
+
+
 //======================
 //     Guitar routes
 //======================
@@ -43,6 +68,9 @@ app.get('/api/product/articles_by_id', (req, res) => {
   .populate('brand')
   .populate('wood')
   .exec((err, docs) => {
+    if(err){
+      return res.status(400).send(err);
+    }
     return res.status(200).send(docs);
   })
 
