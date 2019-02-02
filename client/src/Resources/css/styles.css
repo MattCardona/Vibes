@@ -914,4 +914,10 @@ footer .business_info .info {
     header .container .left{
         width: 200px;
     }
+    footer .business_info {
+        display: block;
+    }
+    footer .left_icons {
+        padding-left: 20px;
+    }
 }
