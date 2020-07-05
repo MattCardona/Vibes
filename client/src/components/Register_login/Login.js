@@ -3,6 +3,9 @@ import { connect } from 'react-redux';
 import FormField from '../utils/Forms/FormField';
 import { update, generateData, isFormValid } from '../utils/Forms/formActions';
 
+import { loginUser } from '../../actions/user_actions';
+import { withRouter } from 'react-router-dom';
+
 class Login extends Component {
   constructor(props) {
     super(props);
@@ -46,14 +49,18 @@ class Login extends Component {
       }
     }
   }
-  submitForm(e) {
+  submitForm = async (e) => {
     e.preventDefault();
     let dataToSubmit = generateData(this.state.formdata, "login");
     let formIsValid = isFormValid(this.state.formdata, "login");
     if (!formIsValid) {
       this.setState(({ formError: true }));
     } else {
-      console.log(dataToSubmit);
+      let data = await this.props.loginUser(dataToSubmit);
+      if (data.loginSuccess) {
+        // console.log("Success we have takeoff");
+        this.props.history.push("/user/dashboard");
+      }
     }
   }
   updateForm(element) {
@@ -92,4 +99,4 @@ class Login extends Component {
   }
 };
 
-export default connect()(Login);
+export default connect(undefined, { loginUser })(withRouter(Login));
