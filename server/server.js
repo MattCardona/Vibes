@@ -6,22 +6,22 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 
 mongoose.Promise = global.Promise;
-mongoose.connect(process.env.MONGO_DB, {useNewUrlParser: true});
+mongoose.connect(process.env.MONGO_DB, { useNewUrlParser: true, useUnifiedTopology: true });
 const { User } = require('./models/user');
-const { Brand } = require('./models/brand'); 
-const { Wood } = require('./models/wood'); 
-const { Guitar } = require('./models/guitars'); 
+const { Brand } = require('./models/brand');
+const { Wood } = require('./models/wood');
+const { Guitar } = require('./models/guitars');
 
 const { auth } = require('./middleware/auth');
 const { admin } = require('./middleware/admin');
 
 const port = process.env.PORT || 5000;
 
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cookieParser());
 
-app.get("/", (req,res) => {
+app.get("/", (req, res) => {
   res.send("This is the home route");
 })
 // sort by arrival
@@ -35,17 +35,17 @@ app.get('/api/product/articles', (req, res) => {
   let limit = req.query.limit ? parseInt(req.query.limit) : 50;
 
   Guitar.find()
-  .populate('brand')
-  .populate('wood')
-  .sort([[sortBy, order]])
-  .limit(limit)
-  .exec()
-  .then(guitars => {
-    return res.status(200).send(guitars);
-  })
-  .catch(err => {
-    return res.status(400).send(err);
-  })
+    .populate('brand')
+    .populate('wood')
+    .sort([[sortBy, order]])
+    .limit(limit)
+    .exec()
+    .then(guitars => {
+      return res.status(200).send(guitars);
+    })
+    .catch(err => {
+      return res.status(400).send(err);
+    })
 });
 
 
@@ -55,8 +55,8 @@ app.get('/api/product/articles', (req, res) => {
 app.get('/api/product/articles_by_id', (req, res) => {
   let type = req.query.type;
   let items = req.query.id;
- 
-  if(type === 'array'){
+
+  if (type === 'array') {
     let ids = req.query.id.split(',');
     items = [];
     items = ids.map(item => {
@@ -64,33 +64,33 @@ app.get('/api/product/articles_by_id', (req, res) => {
     });
   }
 
-  Guitar.find({'_id': {$in: items}})
-  .populate('brand')
-  .populate('wood')
-  .exec((err, docs) => {
-    if(err){
-      return res.status(400).send(err);
-    }
-    return res.status(200).send(docs);
-  })
+  Guitar.find({ '_id': { $in: items } })
+    .populate('brand')
+    .populate('wood')
+    .exec((err, docs) => {
+      if (err) {
+        return res.status(400).send(err);
+      }
+      return res.status(200).send(docs);
+    })
 
 });
 
 
 app.post('/api/product/article', auth, admin, (req, res) => {
   new Guitar(req.body).save()
-  .then(doc => {
-    res.status(200).json({
-      success: true,
-      article: doc
+    .then(doc => {
+      res.status(200).json({
+        success: true,
+        article: doc
+      });
+    })
+    .catch(err => {
+      return res.json({
+        success: false,
+        err
+      });
     });
-  })
-  .catch(err => {
-    return res.json({
-      success: false,
-      err
-    });
-  });
 });
 
 
@@ -100,28 +100,28 @@ app.post('/api/product/article', auth, admin, (req, res) => {
 
 app.post('/api/product/wood', auth, admin, (req, res) => {
   new Wood(req.body).save()
-  .then(doc => {
-    res.status(200).json({
-      success: true,
-      wood: doc
+    .then(doc => {
+      res.status(200).json({
+        success: true,
+        wood: doc
+      });
+    })
+    .catch(err => {
+      return res.json({
+        success: false,
+        err
+      });
     });
-  })
-  .catch(err => {
-    return res.json({
-      success: false,
-      err
-    });
-  });
 });
 
 app.get('/api/product/woods', auth, admin, (req, res) => {
   Wood.find({})
-  .then(woods => {
-    res.status(200).send(woods);
-  })
-  .catch(err => {
-    return res.status(400).send(err);
-  });
+    .then(woods => {
+      res.status(200).send(woods);
+    })
+    .catch(err => {
+      return res.status(400).send(err);
+    });
 });
 
 //======================
@@ -130,28 +130,28 @@ app.get('/api/product/woods', auth, admin, (req, res) => {
 
 app.post('/api/product/brand', auth, admin, (req, res) => {
   new Brand(req.body).save()
-  .then(doc => {
-    res.status(200).json({
-      success: true,
-      brand: doc
+    .then(doc => {
+      res.status(200).json({
+        success: true,
+        brand: doc
+      });
+    })
+    .catch(err => {
+      return res.json({
+        success: false,
+        err
+      });
     });
-  })
-  .catch(err => {
-    return res.json({
-      success: false,
-      err
-    });
-  });
 });
 
 app.get('/api/product/brands', (req, res) => {
   Brand.find({})
-  .then(brands => {
-    res.status(200).send(brands);
-  })
-  .catch(err => {
-    return res.status(400).send(err);
-  });
+    .then(brands => {
+      res.status(200).send(brands);
+    })
+    .catch(err => {
+      return res.status(400).send(err);
+    });
 });
 
 //======================
@@ -175,32 +175,32 @@ app.get('/api/users/auth', auth, (req, res) => {
 
 app.post('/api/users/register', (req, res) => {
   new User(req.body).save()
-  .then(user => {
-    res.status(200).json({
-      success: true
+    .then(user => {
+      res.status(200).json({
+        success: true
+      });
+    })
+    .catch(err => {
+      res.json({
+        success: false,
+        err
+      });
     });
-  })
-  .catch(err => {
-    res.json({
-      success: false,
-      err
-    });
-  });
 });
 
 app.post('/api/users/login', (req, res) => {
   const { password, email } = req.body;
 
-  User.findOne({'email': email}).then(user => {
-    if(!user){
+  User.findOne({ 'email': email }).then(user => {
+    if (!user) {
       return res.json({
         loginSuccess: false,
         message: 'Auth failed, Email not found'
       });
     }
-    
+
     user.comparePassword(password, (err, isMatch) => {
-      if(!isMatch){
+      if (!isMatch) {
         return res.json({
           loginSuccess: false,
           message: 'Wrong password'
@@ -208,7 +208,7 @@ app.post('/api/users/login', (req, res) => {
       }
 
       user.generateToken((err, user) => {
-        if(err){
+        if (err) {
           return res.status(400).send(err);
         }
         res.cookie('w_auth', user.token).status(200).json({
@@ -217,24 +217,24 @@ app.post('/api/users/login', (req, res) => {
       });
 
     });
-    
+
   })
 });
 
 app.get('/api/user/logout', auth, (req, res) => {
   const { id } = req.user;
-  User.findOneAndUpdate({_id: id},{token: ''})
-  .then(doc => {
-    return res.status(200).json({
-      success: true
+  User.findOneAndUpdate({ _id: id }, { token: '' })
+    .then(doc => {
+      return res.status(200).json({
+        success: true
+      });
+    })
+    .catch(err => {
+      return res.json({
+        success: false,
+        err
+      });
     });
-  })
-  .catch(err => {
-    return res.json({
-      success: false,
-      err
-    });
-  });
 });
 
 app.listen(port, () => {
