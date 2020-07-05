@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import FormField from '../utils/Forms/FormField';
-import { update } from '../utils/Forms/formActions';
+import { update, generateData, isFormValid } from '../utils/Forms/formActions';
 
 class Login extends Component {
-  constructor(props){
+  constructor(props) {
     super(props);
-    this.submitForm = this.submitForm.bind(this);    
-    this.updateForm = this.updateForm.bind(this);    
+    this.submitForm = this.submitForm.bind(this);
+    this.updateForm = this.updateForm.bind(this);
     this.state = {
       formError: false,
       formSuccess: '',
@@ -47,7 +47,14 @@ class Login extends Component {
     }
   }
   submitForm(e) {
-
+    e.preventDefault();
+    let dataToSubmit = generateData(this.state.formdata, "login");
+    let formIsValid = isFormValid(this.state.formdata, "login");
+    if (!formIsValid) {
+      this.setState(({ formError: true }));
+    } else {
+      console.log(dataToSubmit);
+    }
   }
   updateForm(element) {
     const newFormdata = update(element, this.state.formdata, 'login');
@@ -61,17 +68,24 @@ class Login extends Component {
       <div className="signin_wrapper">
         <form onSubmit={(event) => this.submitForm(event)}>
 
-          <FormField 
+          <FormField
             id={'email'}
             formdata={this.state.formdata.email}
             change={(element) => this.updateForm(element)}
           />
-          <FormField 
+          <FormField
             id={'password'}
             formdata={this.state.formdata.password}
             change={(element) => this.updateForm(element)}
           />
-
+          {this.state.formError ?
+            <div className="error_label">
+              Please check your data
+            </div>
+            :
+            null
+          }
+          <button onClick={this.submitForm}>Login</button>
         </form>
       </div>
     )
